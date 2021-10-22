@@ -50,10 +50,9 @@ For more serious use, I would advise you host your own zip file so that you woul
 See below for more details.  
   
 * Max Concurrent Jobs:  
-An API call to Azure will be made for each subscription.  
-If you have many subscription, you might get an http timeout when calling the function from your monitoring system.  
+An API call to Azure will be made for each resource group.  
+If you have many resource groups, you might get an http timeout when calling the function from your monitoring system.  
 This value allows to make <value> calls to Azure API in parallel.  
-With the default value, it will take around 30 seconds for ~100 subscriptions.  
   
 * Global Exceptions:  
 There are some Azure internal resource groups that you might not want to check like NetworkWatcherRG, etc.  
