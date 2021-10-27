@@ -50,9 +50,11 @@ $alert = 0
 $body = ""
 $signature = $env:Signature
 $maxConcurrentJobs = [int] $env:MaxConcurrentJobs
-$exclusionsTab = $exclusion.split(",")
+[System.Collections.ArrayList] $exclusionsTab = $exclusion.split(",")
 $readonlysTab = $readonly.split(",")
-
+foreach ($current in ($env:AzureResourceGroupLockGlobalExceptions).split(",")) {
+	$exclusionsTab.Add($current)
+}
 # connect with SPN account creds
 $tenantId = $env:TenantId
 $applicationId = $env:AzureResourceGroupLockCheckApplicationID
@@ -100,6 +102,12 @@ foreach ($rg in $rgs) {
 		$locks = (Invoke-RestMethod -Method Get -Uri $uri -Headers $headers).value
 
 		foreach ($lock in $locks) {
+			#checks the scope level ; continue if not at rg level
+			$scope = $locks.id.split("/")
+			if ($scope[6] -ne "Microsoft.Authorization") {
+				continue 
+			}
+			
 			if ($lock.properties.level -eq "CanNotDelete") {
 				$deleteLock = $true
 			}
@@ -108,16 +116,23 @@ foreach ($rg in $rgs) {
 			}
 		}
 		if ($exclusionsTab -contains $rg.name) {
-			$out += "OK - $($rg.Name): resource group excluded from lock check"
+			$state = ""
+			if ($deleteLock -eq $true) { $state = " (delete lock is present)" }
+			if ($readonlyLock -eq $true) { $state = " (readonly lock is present)" }
+			$out += "OK - $($rg.Name): resource group excluded from lock check$state"
 		}
 		elseif ($readonlysTab -contains $rg.name -and $readonlyLock -ne $true) {
-			$out += "CRITICAL - $($rg.Name): resource group should have a readonly lock check"
+			$state = ""
+			if ($deleteLock -eq $true) { $state = " (only delete lock is present)" }
+			$out += "CRITICAL - $($rg.Name): resource group should have a readonly lock check$state"
 		}
 		elseif ($deleteLock -eq $false -and $readonlyLock -eq $false) {
 			$out += "CRITICAL - $($rg.Name): resource group has no lock check"
 		}
 		else {
-			$out += "OK - $($rg.Name): resource group is locked"
+			$state = ""
+			if ($readonlyLock -eq $true) { $state = " (readonly lock is present)" }
+			$out += "OK - $($rg.Name): resource group is locked$state"
 		}
 		echo $out
 	}).AddArgument($headers).AddArgument($subscriptionid).AddArgument($rg).AddArgument($exclusionsTab).AddArgument($readonlysTab)
