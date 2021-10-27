@@ -7,7 +7,7 @@ It can be a good practice do have locks in place on your resource groups to prot
   
 This function app automatically checks if resource groups of a specified subscription are locked or not.  
   
-You can also specify exception if you explicitely don't want to check lock for some resource groups or specify that want to check for a readonly lock instead of a delete lock.  
+You can also specify exception if you explicitely don't want to check for lock on some resource groups or specify that you want to check for a readonly lock instead of a delete lock.  
   
 Coupled with a common monitoring system (nagios, centreon, zabbix, or whatever you use), you'll automatically get alerted as soon as a resource group is not locked as it should be.  
 </br>
@@ -16,7 +16,8 @@ Coupled with a common monitoring system (nagios, centreon, zabbix, or whatever y
 ## Requirements
 * An "app registration" account (client id, valid secret and tenant id).  
 * Reader RBAC role for this account on all subscriptions you want to monitor.  
-
+</br>
+</br>
 
 ## Installation
 Once you have all the requirements, you can deploy the Azure function with de "Deploy" button below:  
@@ -57,6 +58,7 @@ This value allows to make <value> calls to Azure API in parallel.
 * Global Exceptions:  
 There are some Azure internal resource groups that you might not want to check like NetworkWatcherRG, etc.  
 You can specify comma separated names.  
+The ARM templates already brings some usefull examples.  
   
 * Signature:  
 When this function will be called by your monitoring system, you likely might forget about it.  
@@ -89,7 +91,7 @@ You can also specify comma separated resource group names to exclude with &exclu
   
 Or check for a readonly lock instead of delete lock with comma separated resource group names with &readonly=rg3,rg4  
   
-Be sure to have an appropriate timeout (60s or more) because if you have many subscriptions, the function will need some time to execute.  
+Be sure to have an appropriate timeout (30s or more) because if you have many resource groups, the function might need some time to execute.  
   
 This is an example of what you'd get in Centreon:  
 ![alt text](https://github.com/matoy/AzureResourceGroupLockCheck/blob/main/img/screenshot2.png?raw=true)  
