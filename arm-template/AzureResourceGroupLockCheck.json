@@ -46,7 +46,7 @@
     },
 	"GlobalExceptions": {
       "type": "string",
-      "defaultValue": "DefaultResourceGroup-WEU,AzureBackupRG_westeurope_1,NetworkWatcherRG,AzureBackupRG_southeastasia_1",
+      "defaultValue": "DefaultResourceGroup-WEU,AzureBackupRG_westeurope_1,NetworkWatcherRG,AzureBackupRG_southeastasia_1,cloud-shell-storage-westeurope,LogAnalyticsDefaultResources",
       "metadata": {
         "description": "Global resource groups exceptions valid without have to specify in GET parameter"
 	  }
