@@ -153,8 +153,11 @@ foreach ($job in $Jobs) {
 	$job.PowerShell.Dispose()
 	if ($current -match "CRITICAL") {
 		$alert++
+		$body = $current + "`n" + $body
 	}
-	$body += $current + "`n"
+	else {
+		$body += $current + "`n"
+	}
 }
 if ($rgs.count -eq 0) {
 	$alert++
