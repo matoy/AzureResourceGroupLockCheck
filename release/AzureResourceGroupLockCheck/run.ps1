@@ -166,7 +166,7 @@ if ($rgs.count -eq 0) {
 # add ending status and signature to results
 $body += "`n$signature`n"
 if ($alert) {
-    $body = "Status CRITICAL - Missing/incorrect lock on $alert resource group(s)!`n" + $body
+    $body = "Status CRITICAL - Missing/incorrect lock on $alert/$($rgs.count) resource group(s)!`n" + $body
 }
 else {
     $body = "Status OK - No alert on any $($rgs.count) resource group(s)`n" + $body
