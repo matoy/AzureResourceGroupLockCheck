@@ -75,7 +75,13 @@ $headers.Add("Authorization", "bearer " + "$($Token.Accesstoken)")
 $headers.Add("contenttype", "application/json")
 
 $uri = "https://management.azure.com/subscriptions/$subscriptionid/resourcegroups?api-version=2021-04-01"
-$rgs = (Invoke-RestMethod -Method Get -Uri $uri -Headers $headers).value
+$results = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
+$rgs = $results.value
+while ($results.nextLink) {
+	$uri = $results.nextLink
+	$results = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
+	$rgs += $results.value
+}
 
 # if many resource groups, too long execution would cause an http timeout from 
 # the monitoring system calling the function
